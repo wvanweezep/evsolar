@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EV Solar Charging</title>
+
+    <style>
+        body{
+            font-family: system-ui, -apple-system;
+            margin:0;
+            padding:24px;
+            background:linear-gradient(0deg, #1e2945, #0b1020) no-repeat;
+            height:100vh;
+            color: rgba(232, 236, 255, 0.96)
+        }
+        .grid{
+            display:grid;
+            gap:16px;
+            grid-template-columns:repeat(auto-fit, minmax(260px, 1fr))
+        }
+        .card {
+            background:rgba(255,255,255,0.01);
+            border:1px solid rgba(133, 142, 176, 0.71);
+            border-radius:12px;
+            line-height: 1.2;
+            padding: 8px 8px;
+        }
+        .card .card {
+            margin-top: 0;
+            margin-bottom: 8px;
+        }
+        .text-row {
+            font-family: "Courier New", serif;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        p, h4 {
+            margin-top: 4px;
+            margin-bottom: 12px;
+            font-size: 12px;
+            line-height: 0.5;
+        }
+        .bottom-right {
+            position: fixed; /* Fixes the text at the bottom-right */
+            bottom: 5px;     /* Distance from the bottom */
+            right: 10px;      /* Distance from the right */
+            font-family: "Courier New", serif;
+            color: rgba(232, 236, 255, 0.96);
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>EV Solar Charging</h1>
+    <div class="grid">
+
+        <div class="card" id="nrg-card">
+            <h3 class="card">NRGKick</h3>
+            <div class="card" id="nrg-connection-card">
+                <h4>Connection</h4>
+                <p class="text-row">Status: <span id="nrg-connection-status"></span></p>
+                <p class="text-row">Last Response: <span id="nrg-last-response"></span></p>
+            </div>
+            <div class="card" id="nrg-status-card">
+                <h4>Status</h4>
+                <p class="text-row">Status: <span id="nrg-status"></span></p>
+                <p class="text-row">Phase Count: <span id="nrg-phase-count"></span></p>
+                <p class="text-row">Set Current: <span id="nrg-set-current"></span></p>
+            </div>
+        </div>
+
+        <div class="card" id="hw-card">
+            <h3 class="card">HomeWizard P1</h3>
+            <div class="card" id="hw-connection-card">
+                <h4>Connection</h4>
+                <p class="text-row">Status: <span id="hw-connection-status"></span></p>
+                <p class="text-row">Last Response: <span id="hw-last-response"></span></p>
+            </div>
+            <div class="card" id="hw-status-card">
+                <h4>Status</h4>
+                <p class="text-row">Active Current L1: <span id="hw-current-l1"></span></p>
+                <p class="text-row">Active Current L2: <span id="hw-current-l2"></span></p>
+                <p class="text-row">Active Current L3: <span id="hw-current-l3"></span></p>
+            </div>
+        </div>
+
+        <div class="card" id="cp-card">
+            <h3 class="card">Control Panel</h3>
+            <div class="card" id="cp-control-card">
+
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-right">v1.0</div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

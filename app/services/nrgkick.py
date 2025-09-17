@@ -1,6 +1,7 @@
 import requests
 
-from typing import Dict, Any
+from dataclasses import dataclass
+from typing import Dict, Any, Optional
 
 
 class NRGKick:
@@ -25,3 +26,12 @@ class NRGKick:
 
     def pause(self, pause: bool) -> None:
         self._put("/control", {"charge_pause": 1 if pause else 0})
+
+
+@dataclass
+class NRGState:
+    connected: bool = False
+    last_response: int = 999
+    status: str = "UNKNOWN"
+    phase_count: Optional[int] = None
+    set_current: Optional[int] = None
