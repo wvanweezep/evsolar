@@ -14,12 +14,16 @@ class SolarCharge:
         self._nrg: NRGKick = nrg
         self._active: bool = False
         self._timer: Timer = Timer(SolarCharge.REQ_START_TIME, self.start)
+        self._stabilization_timer: Timer = Timer(float(os.getenv("STABILIZATION_TIME", 10)), self.stabilized)
+        self._stabilization_timeout: bool = False
 
     def start(self) -> None:
         self._active = True
         self._timer = Timer(SolarCharge.REQ_STOP_TIME, self.stop)
         self._nrg.set_phases(1)
         self._nrg.pause(False)
+        self._stabilization_timeout = True
+        self._stabilization_timer.reset()
         Debug.log(f"[SolarCharge] Started charging!", 2)
 
     def stop(self) -> None:
@@ -34,14 +38,20 @@ class SolarCharge:
         set_amps: float = self._nrg.get_control().get("current_set", -1)
         if set_amps != current_amps:
             self._nrg.set_current(current_amps)
+            self._stabilization_timeout = True
+            self._stabilization_timer.reset()
             Debug.log(f"[SolarCharge] Regulated set_current to: {current_amps}", 2)
+
+    def stabilized(self) -> None:
+        self._stabilization_timeout = False
 
     def update(self, total_amps: float, set_amps: float) -> None:
         if total_amps < SolarCharge.MIN_START_AMPS and not self._active or \
             total_amps - set_amps > SolarCharge.MIN_START_AMPS and self._active:
             self._timer.update()
         else: self._timer.reset()
-        if self._active:
-            print(f"total:{total_amps}, set:{set_amps}")
-            self.regulate(total_amps - set_amps)
 
+        if self._active:
+            if self._stabilization_timeout:
+                self._stabilization_timer.update()
+            else: self.regulate(total_amps - set_amps)
