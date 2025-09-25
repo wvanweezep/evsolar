@@ -3,6 +3,8 @@ import requests
 from dataclasses import dataclass
 from typing import Dict, Any, Optional
 
+from commons.debug import Debug
+
 
 class NRGKick:
     def __init__(self, base_url: str):
@@ -26,6 +28,15 @@ class NRGKick:
 
     def pause(self, pause: bool) -> None:
         self._put("/control", {"charge_pause": 1 if pause else 0})
+
+    def set_current(self, amps: float) -> None:
+        self._put("/control", {"current_set": amps})
+
+    def set_phases(self, count: int) -> None:
+        if count < 0 or count > 3:
+            Debug.log(f"[ERROR] Invalid number of phases: {count}", 1)
+        else: self._put("/control", {"phase_count": count})
+
 
 
 @dataclass

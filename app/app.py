@@ -1,17 +1,23 @@
+import logging
 import os, threading, time
 
 from flask import Flask, jsonify, render_template
 
+from commons.debug import Debug
 from services.homewizard import HomeWizard, HWState
 from services.nrgkick import NRGKick, NRGState
+from services.solarcharge import SolarCharge
 
 app = Flask(__name__)
+logging.getLogger('werkzeug').setLevel(logging.ERROR)
 
 hw = HomeWizard(os.getenv("HOMEWIZARD_BASE_URL"))
 nrg = NRGKick(os.getenv("NRGKICK_BASE_URL"))
+sc = SolarCharge(nrg)
 
 nrg_state = NRGState()
 hw_state = HWState()
+solar_charging = True
 
 
 ######################################## Background Poller ########################################
@@ -39,6 +45,10 @@ def poll_loop() -> None:
         except:
             hw_state.connected = False
             hw_state.last_response += 1
+
+        if solar_charging:
+            total_amps: float = hw_state.l1_a + hw_state.l2_a + hw_state.l3_a
+            sc.update(total_amps, nrg_state.set_current)
 
         time.sleep(2)
 
@@ -73,4 +83,5 @@ def api_hw_state():
 if __name__ == "__main__":
     thread = threading.Thread(target=poll_loop, daemon=True)
     thread.start()
+    Debug.log("[Main] Starting Application...", 1)
     app.run(host="0.0.0.0", port=8000)
