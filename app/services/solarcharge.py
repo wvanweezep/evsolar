@@ -69,7 +69,7 @@ class SolarCharge:
         :param total_amps: the current summed power in amps
         :param set_amps: the current set amps for the charger
         """
-        current_amps: float = round((min(max(total_amps, -16), -6) * -1) - set_amps, 1)
+        current_amps: float = round(min(max(total_amps - set_amps, -16), -6) * -1, 1)
         if set_amps != current_amps:
             self._nrg.set_current(current_amps)
             self._start_timeout()
