@@ -5,22 +5,22 @@
     <title>EV Solar Charging</title>
 
     <style>
-        body{
+        body {
             font-family: system-ui, -apple-system;
             margin:0;
             padding:24px;
             background:linear-gradient(0deg, #1e2945, #0b1020) no-repeat;
-            height:100vh;
+            min-height:100vh;
             color: rgba(232, 236, 255, 0.96)
         }
-        .grid{
+        .grid {
             display:grid;
             gap:16px;
             grid-template-columns:repeat(auto-fit, minmax(260px, 1fr))
         }
         .card {
             background:rgba(255,255,255,0.01);
-            border:1px solid rgba(133, 142, 176, 0.71);
+            border: 1px solid rgba(133, 142, 176, 0.71);
             border-radius:12px;
             line-height: 1.2;
             padding: 8px 8px;
@@ -35,27 +35,110 @@
             justify-content: space-between;
             align-items: center;
         }
-        p, h4 {
+
+        p, h4, label {
             margin-top: 4px;
             margin-bottom: 12px;
             font-size: 12px;
             line-height: 0.5;
         }
         .bottom-right {
-            position: fixed; /* Fixes the text at the bottom-right */
-            bottom: 5px;     /* Distance from the bottom */
-            right: 10px;      /* Distance from the right */
+            position: fixed;
+            bottom: 5px;
+            right: 10px;
             font-family: "Courier New", serif;
             color: rgba(232, 236, 255, 0.96);
             font-size: 12px;
         }
+
+        input {
+            font-family: "Courier New", serif;
+            color: rgba(232, 236, 255, 0.96);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(133, 142, 176, 0.71);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        input[type=number] {
+            width: 34px;
+            text-align:right;
+            font-size: 11px;
+        }
+
+        .text-row .toggle {
+            margin-top: -2px;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+            margin: 0;
+            pointer-events: none;
+        }
+
+        .toggle {
+            position: relative;
+            width: 40px;
+            height: 20px;
+            display: inline-block;
+            vertical-align: middle;
+            margin: 0;
+        }
+
+        .slider {
+          position: absolute;
+          cursor: pointer;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(133, 142, 176, 0.71);
+          border-radius: 8px;
+          transition: 0.3s;
+        }
+
+        input:focus, input:hover, .slider:focus, .slider:hover {
+            outline: none;
+            border-color: rgba(232, 236, 255, 0.86);
+            background: rgba(255,255,255,0.2);
+            transition: 0.3s;
+        }
+
+        .slider::before {
+          position: absolute;
+          content: "";
+          height: 14px;
+          width: 14px;
+          left: 3px;
+          bottom: 2px;
+          background: rgba(232, 236, 255, 0.96);
+          border-radius: 33%;
+          transition: 0.3s;
+        }
+
+        .toggle input:checked + .slider {
+          background: #25D366;
+        }
+
+        .toggle input:checked + .slider::before {
+          transform: translateX(18px);
+        }
+
+        input[type="time"]::-webkit-calendar-picker-indicator {
+          filter: invert(95%) sepia(5%) saturate(200%) hue-rotate(200deg);
+        }
+
     </style>
 </head>
 <body>
     <h1>EV Solar Charging</h1>
     <div class="grid">
 
-        <div class="card" id="nrg-card">
+        <section class="card" id="nrg-card">
             <h3 class="card">NRGKick</h3>
             <div class="card" id="nrg-connection-card">
                 <h4>Connection</h4>
@@ -68,9 +151,9 @@
                 <p class="text-row">Phase Count: <span id="nrg-phase-count"></span></p>
                 <p class="text-row">Set Current: <span id="nrg-set-current"></span></p>
             </div>
-        </div>
+        </section>
 
-        <div class="card" id="hw-card">
+        <section class="card" id="hw-card">
             <h3 class="card">HomeWizard P1</h3>
             <div class="card" id="hw-connection-card">
                 <h4>Connection</h4>
@@ -83,14 +166,50 @@
                 <p class="text-row">Active Current L2: <span id="hw-current-l2"></span></p>
                 <p class="text-row">Active Current L3: <span id="hw-current-l3"></span></p>
             </div>
-        </div>
+        </section>
 
-        <div class="card" id="cp-card">
+        <section class="card" id="cp-card">
             <h3 class="card">Control Panel</h3>
-            <div class="card" id="cp-control-card">
-
+            <div class="card" id="cp-auto-card">
+                <h4>Automate</h4>
+                <p class="text-row">
+                    Solar Charging:
+                    <label class="toggle">
+                        <input type="checkbox" id="cp-solar-charge">
+                        <span class="slider"></span>
+                    </label>
+                </p>
+                <p class="text-row">
+                    Scheduled Charging:
+                    <label class="toggle">
+                        <input type="checkbox" id="cp-scheduled-charge">
+                        <span class="slider"></span>
+                    </label>
+                </p>
+                <label class="text-row">Time:
+                    <input type="time">
+                </label>
             </div>
-        </div>
+            <form class="card" id="cp-manual-form" method="POST" action="/submit">
+                <h4>Manual</h4>
+                <p class="text-row">
+                    Charging:
+                    <label class="toggle">
+                        <input type="checkbox" id="cp-charging" name="charging">
+                        <span class="slider"></span>
+                    </label>
+                </p>
+                <label class="text-row">Phase Count:
+                    <input type="number" id="cp-phase-count" name="phase_count" value="3" min="1" max="3">
+                </label>
+                <label class="text-row">Set Current:
+                    <input type="number" id="cp-set-current" name="set_current" value="6" min="6" max="16" step=".1">
+                </label>
+                <label class="text-row">
+                    <input type="submit" id="cp-submit">
+                </label>
+            </form>
+        </section>
     </div>
 
     <div class="bottom-right">v1.0</div>

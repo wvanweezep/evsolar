@@ -1,7 +1,7 @@
 import logging
 import os, threading, time
 
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, request
 
 from commons.debug import Debug
 from services.homewizard import HomeWizard, HWState
@@ -77,6 +77,14 @@ def api_hw_state():
         "l2_a": hw_state.l2_a,
         "l3_a": hw_state.l3_a
     })
+
+@app.route('/submit', methods=['POST'])
+def cp_manual_submit():
+    data = request.get_json()
+    nrg.pause(bool(data.get('charging')))
+    nrg.set_phases(int(data.get('phase_count')))
+    nrg.set_current(float(data.get('set_current')))
+    return jsonify({"status": "ok"})
 
 
 

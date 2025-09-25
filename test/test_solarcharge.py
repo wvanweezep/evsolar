@@ -3,7 +3,7 @@ import pytest
 from freezegun import freeze_time
 
 from commons.debug import Debug
-from mock.mock_nrgkick import MockNRGKick
+from mock.nrgkick import MockNRGKick
 from services.solarcharge import SolarCharge
 
 
